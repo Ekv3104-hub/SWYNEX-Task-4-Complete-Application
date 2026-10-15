@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FoodQueue Owner Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="app-container">
+    <aside class="sidebar">
+      <div>
+        <div class="brand">
+          <div class="brand-icon">FQ</div>
+          <div class="brand-text">
+            <h1>FoodQueue</h1>
+            <p>Owner Dashboard</p>
+          </div>
+        </div>
+        <nav class="nav-links">
+          <button class="nav-item active" onclick="showOwnerView('overview', this)"><span>Overview</span></button>
+          <button class="nav-item" onclick="showOwnerView('menu', this)"><span>Menu</span></button>
+          <button class="nav-item" onclick="showOwnerView('orders', this)"><span>Orders</span></button>
+          <button class="nav-item" onclick="showOwnerView('settings', this)"><span>Settings</span></button>
+        </nav>
+      </div>
+      <div class="sidebar-footer">
+        <p class="motto-text">Serve faster.<br/>Waste less.<br/>Know more.</p>
+      </div>
+    </aside>
+
+    <main class="main-wrapper">
+      <header class="top-header">
+        <div>
+          <h2 class="section-title">Canteen Management</h2>
+          <p class="modal-subtitle" id="ownerSubtitle">Loading dashboard...</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn-add" onclick="window.location.href='index.html'">Customer App</button>
+          <button class="btn-add" onclick="ownerLogout()">Logout</button>
+        </div>
+      </header>
+
+      <div class="content-scroll">
+        <section id="overviewView">
+          <div class="food-grid" id="ownerMetrics"></div>
+          <div class="section-header"><h3 class="section-title">Best Sellers</h3></div>
+          <div class="food-grid" id="bestSellers"></div>
+          <div class="section-header"><h3 class="section-title">Stock Alerts</h3></div>
+          <div id="stockAlerts"></div>
+        </section>
+
+        <section id="menuView" style="display:none;">
+          <div class="section-header">
+            <h3 class="section-title">Menu & Inventory</h3>
+            <button class="btn-add" onclick="openMenuEditor()">Add Item</button>
+          </div>
+          <div class="food-grid" id="ownerMenuGrid"></div>
+        </section>
+
+        <section id="ordersView" style="display:none;">
+          <div class="section-header"><h3 class="section-title">Incoming Orders</h3></div>
+          <div id="ownerOrdersList"></div>
+        </section>
+
+        <section id="settingsView" style="display:none;">
+          <div class="section-header"><h3 class="section-title">Canteen Settings</h3></div>
+          <form class="modal-card" style="max-width:none;" onsubmit="saveCanteenSettings(event)">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="canteenName">Canteen Name</label>
+                <input id="canteenName" class="form-control" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="canteenPhone">Contact Phone</label>
+                <input id="canteenPhone" class="form-control" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="canteenDescription">Description</label>
+              <input id="canteenDescription" class="form-control" />
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="openingWeekday">Weekday Hours</label>
+                <input id="openingWeekday" class="form-control" placeholder="08:00-19:00" />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="pickupLocations">Pickup Locations</label>
+                <input id="pickupLocations" class="form-control" placeholder="Comma separated" />
+              </div>
+            </div>
+            <button class="btn-checkout" type="submit">Save Canteen Settings</button>
+          </form>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-overlay" id="menuEditorModal">
+    <div class="modal-card">
+      <button class="modal-close-btn" onclick="closeOwnerModal('menuEditorModal')">×</button>
+      <h3 class="modal-title" id="menuEditorTitle">Menu Item</h3>
+      <form onsubmit="saveMenuItem(event)">
+        <input type="hidden" id="menuItemId" />
+        <div class="form-row">
+          <div class="form-group"><label class="form-label" for="menuName">Name</label><input id="menuName" class="form-control" required /></div>
+          <div class="form-group"><label class="form-label" for="menuCategory">Category</label><input id="menuCategory" class="form-control" required /></div>
+        </div>
+        <div class="form-group"><label class="form-label" for="menuDescription">Description</label><input id="menuDescription" class="form-control" required /></div>
+        <div class="form-group"><label class="form-label" for="menuImage">Image URL</label><input id="menuImage" class="form-control" /></div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label" for="menuPrice">Price</label><input id="menuPrice" type="number" min="0" class="form-control" required /></div>
+          <div class="form-group"><label class="form-label" for="menuStock">Stock</label><input id="menuStock" type="number" min="0" class="form-control" required /></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label" for="menuLowStock">Low Stock Alert</label><input id="menuLowStock" type="number" min="0" class="form-control" required /></div>
+          <div class="form-group"><label class="form-label" for="menuAvailable">Available</label><select id="menuAvailable" class="form-control"><option value="true">Available</option><option value="false">Sold out</option></select></div>
+        </div>
+        <button class="btn-checkout" type="submit">Save Item</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast-popup" id="toast"><span id="toastMsg">Action successful</span></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="js/owner.js"></script>
+</body>
+</html>

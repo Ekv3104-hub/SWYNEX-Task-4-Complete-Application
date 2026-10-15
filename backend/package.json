@@ -1,0 +1,20 @@
+{
+  "name": "foodqueue-task4-complete-application-backend",
+  "version": "1.0.0",
+  "description": "FoodQueue Task 4 backend with Supabase PostgreSQL-ready persistence, auth, owner dashboard APIs, and tests.",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=22.5"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "pg": "^8.23.1"
+  },
+  "devDependencies": {
+    "supertest": "^7.1.1"
+  }
+}

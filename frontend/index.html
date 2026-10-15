@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FoodQueue | Smart Campus Café Ordering & Live Queue</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <div class="app-container">
+
+    <!-- Left Navigation Sidebar -->
+    <aside class="sidebar">
+      <div>
+        <div class="brand">
+          <div class="brand-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 2v6a3 3 0 0 1-3 3 3 3 0 0 1-3-3V2"></path>
+              <path d="M15 2v10a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V2"></path>
+              <path d="M12 14v8"></path>
+              <path d="M6 2v6a3 3 0 0 0 3 3"></path>
+            </svg>
+          </div>
+          <div class="brand-text">
+            <h1>FoodQueue</h1>
+            <p>Good Food. Less Wait.</p>
+          </div>
+        </div>
+
+        <nav class="nav-links">
+          <button class="nav-item active" onclick="switchNav(this, 'home')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            <span>Home</span>
+          </button>
+          <button class="nav-item" onclick="switchNav(this, 'menu')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="7" height="18" x="3" y="3" rx="1"></rect><rect width="7" height="18" x="14" y="3" rx="1"></rect></svg>
+            <span>Menu</span>
+          </button>
+          <button class="nav-item" onclick="openOrdersModal()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            <span>Orders</span>
+          </button>
+          <button class="nav-item" onclick="openOffersModal()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+            <span>Offers</span>
+          </button>
+          <button class="nav-item" onclick="openFeedbackModal()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            <span>Feedback</span>
+          </button>
+          <button class="nav-item" onclick="openSettingsModal()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            <span>Settings</span>
+          </button>
+        </nav>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="botanical-art">
+          <svg width="46" height="60" viewBox="0 0 50 70" fill="none" stroke="#222624" stroke-width="1.3">
+            <path d="M25 65 C25 45 28 20 22 5" />
+            <path d="M25 50 C15 45 10 32 18 28 C22 26 24 38 25 50" />
+            <path d="M24 38 C32 34 38 24 32 18 C28 15 25 26 24 38" />
+            <path d="M23 24 C16 20 15 10 20 8 C23 7 24 16 23 24" />
+          </svg>
+        </div>
+        <p class="motto-text">Good Food<br/>Brings People<br/>Together.</p>
+        <div class="motto-divider"></div>
+      </div>
+    </aside>
+
+    <!-- Main View Section -->
+    <main class="main-wrapper">
+      
+      <!-- Top Search & Info Header -->
+      <header class="top-header">
+        <div class="search-bar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input 
+            type="text" 
+            id="searchInput" 
+            placeholder="Search for dishes, cuisines or café specials..." 
+            oninput="handleSearch(this.value)"
+          />
+        </div>
+
+        <div class="header-actions">
+          <div class="table-badge">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="6" rx="1"></rect>
+              <line x1="7" y1="10" x2="7" y2="20"></line>
+              <line x1="17" y1="10" x2="17" y2="20"></line>
+            </svg>
+            <span id="currentTableLabel">Table 12</span>
+          </div>
+
+          <button class="notification-btn" onclick="openNotifications()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            <span class="notification-badge"></span>
+          </button>
+
+          <div class="avatar-btn" id="avatarBtn" title="Account" onclick="openAccountModal()">
+            EV
+          </div>
+        </div>
+      </header>
+
+      <!-- Scrollable Main Content -->
+      <div class="content-scroll">
+        
+        <section class="hero-banner">
+          <div class="hero-text">
+            <h2>Skip the Line.<br/>Savor the Time.</h2>
+            <p>Order from your table. Fresh food, faster.</p>
+            <button class="hero-btn" onclick="filterCategory('Burgers')">
+              <span>Explore Menu</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </button>
+          </div>
+          <div class="hero-img-container">
+            <img 
+              class="hero-img" 
+              src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=900&auto=format&fit=crop" 
+              alt="Artisanal Café Burger" 
+              onerror="this.src='https://placehold.co/600x300/222/fff?text=Delicious+Food'"
+            />
+          </div>
+          <div class="banner-dots">
+            <span class="dot active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+        </section>
+
+        <section class="categories-bar" id="categoryContainer">
+          <!-- Populated by JavaScript -->
+        </section>
+
+        <!-- Food Menu Grid Section -->
+        <section>
+          <div class="section-header">
+            <h3 class="section-title" id="menuSectionTitle">Popular Today</h3>
+            <button class="view-all-link" onclick="filterCategory('All')">
+              <span>View All</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </button>
+          </div>
+
+          <div class="food-grid" id="foodGrid">
+            <!-- Food Cards Injected by JS -->
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <aside class="cart-sidebar">
+      <div class="cart-header">
+        <h2>Your Cart</h2>
+        <div class="cart-count-pill" id="cartCountBadge">0</div>
+      </div>
+
+      <!-- Item list -->
+      <div class="cart-items-list" id="cartItemsList">
+        <!-- Rendered by JavaScript -->
+      </div>
+
+      <!-- Price summary -->
+      <div class="cart-summary">
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <span id="subtotalVal">₹0</span>
+        </div>
+        <div class="summary-row">
+          <span>Campus Tax & Packaging</span>
+          <span id="taxVal">₹0</span>
+        </div>
+        <div class="summary-row total-row">
+          <span>Total</span>
+          <span id="totalVal">₹0</span>
+        </div>
+
+        <button class="btn-checkout" id="checkoutBtn" onclick="openCheckoutModal()" disabled>
+          <span>Proceed to Checkout</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </button>
+
+        <div class="prep-info">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <div class="prep-info-text">
+            <span>Estimated prep time</span>
+            <strong>15 – 20 mins</strong>
+          </div>
+        </div>
+
+        <!-- Ambient promo mini-banner -->
+        <div class="side-promo-card">
+          <img 
+            src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=400&auto=format&fit=crop" 
+            alt="Café Ambience" 
+            onerror="this.src='https://placehold.co/400x200/222/fff?text=Cafe'"
+          />
+          <div class="side-promo-content">
+            <h4>Meals taste better together.</h4>
+            <p>Good food, great company.</p>
+          </div>
+        </div>
+
+      </div>
+    </aside>
+
+  </div>
+
+  <div class="modal-overlay" id="checkoutModal">
+    <div class="modal-card">
+      <button class="modal-close-btn" onclick="closeModal('checkoutModal')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+
+      <h3 class="modal-title">Checkout Order</h3>
+      <p class="modal-subtitle">Confirm your pickup details for the campus café.</p>
+
+      <form id="checkoutForm" onsubmit="handlePlaceOrder(event)">
+        <div class="form-group">
+          <label class="form-label" for="custName">Student / Customer Name</label>
+          <input type="text" id="custName" class="form-control" placeholder="e.g. Ethan Vance" value="Ethan Vance" required />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="custPhone">Phone Number</label>
+            <input type="tel" id="custPhone" class="form-control" placeholder="+91 98765 43210" value="+91 98765 43210" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="pickupLocation">Pickup Spot</label>
+            <select id="pickupLocation" class="form-control">
+              <option value="Table 12 (Main Floor)" selected>Table 12 (Main Floor)</option>
+              <option value="Express Counter A">Express Counter A</option>
+              <option value="Café Patio Table 4">Café Patio Table 4</option>
+              <option value="Student Library Booth">Student Library Booth</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="pickupTime">Pickup Time</label>
+            <input type="time" id="pickupTime" class="form-control" value="12:30" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="paymentMethod">Payment Method</label>
+            <select id="paymentMethod" class="form-control" required>
+              <option value="upi" selected>UPI</option>
+              <option value="card">Card</option>
+              <option value="cash">Cash</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="orderNotes">Kitchen Instructions (Optional)</label>
+          <input type="text" id="orderNotes" class="form-control" placeholder="e.g. Less spicy, oat milk if available" />
+        </div>
+
+        <!-- Mini Order Summary Review -->
+        <div class="order-mini-summary">
+          <div class="mini-summary-header">Items in Order</div>
+          <div id="modalItemsReview"></div>
+          <div style="border-top: 1px dashed #dcdad0; margin-top: 8px; padding-top: 8px; display: flex; justify-content: space-between; font-weight: 700;">
+            <span>Grand Total:</span>
+            <span id="modalTotalAmount">₹0</span>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-checkout" id="placeOrderBtn" style="margin-top: 10px;">
+          <span id="placeOrderBtnText">Place Order Now</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="confirmModal">
+    <div class="modal-card text-center">
+      <div class="confirm-badge">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+
+      <h3 class="modal-title">Order Received!</h3>
+      <p class="modal-subtitle">Your meal is registered in the FoodQueue kitchen display system.</p>
+
+      <div class="order-token-card">
+        <div class="token-label">Live Queue Token</div>
+        <div class="token-code" id="confirmToken">#FQ-741</div>
+        <p style="font-size: 0.8rem; color: #646A66; margin-top: 4px;">
+          Location: <strong id="confirmPickupSpot">Table 12</strong> &bull; Total: <strong id="confirmAmount">₹0</strong>
+        </p>
+      </div>
+
+      <div style="background: #F3EFE6; border-radius: var(--radius-sm); padding: 12px; margin-bottom: 20px; font-size: 0.85rem; color: #5B4E38;">
+        ⏱️ Estimated ready time: <strong>~15 minutes</strong>
+      </div>
+
+      <div style="display: flex; gap: 10px;">
+        <button class="btn-checkout" style="flex: 1;" onclick="openTrackingFromConfirmation()">
+          <span>Track Live Status</span>
+        </button>
+        <button class="btn-add" style="padding: 12px 18px; border-radius: var(--radius-md);" onclick="closeModal('confirmModal')">
+          Dismiss
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="trackingModal">
+    <div class="modal-card">
+      <button class="modal-close-btn" onclick="closeModal('trackingModal')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+        <h3 class="modal-title" style="margin-bottom: 0;">Live Order Queue</h3>
+        <span id="trackTokenBadge" style="background: var(--accent-dark); color: #fff; padding: 4px 10px; border-radius: 9999px; font-size: 0.78rem; font-weight: 700;">#FQ-741</span>
+      </div>
+      <p class="modal-subtitle">Campus Café Kitchen Display Queue Monitor</p>
+      <p id="trackingStatusMessage" style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 14px;">Loading latest order status...</p>
+
+      <div class="tracking-timeline" id="trackingTimeline">
+        <div class="tracking-step completed" id="step1">
+          <div class="step-marker">✓</div>
+          <div class="step-content">
+            <h4>Order Placed</h4>
+            <p>Order accepted by café POS system.</p>
+            <span class="step-time">Just now</span>
+          </div>
+        </div>
+
+        <div class="tracking-step active" id="step2">
+          <div class="step-marker">2</div>
+          <div class="step-content">
+            <h4>Kitchen Preparing</h4>
+            <p>Chef is assembling fresh ingredients.</p>
+            <span class="step-time">In progress</span>
+          </div>
+        </div>
+
+        <div class="tracking-step" id="step3">
+          <div class="step-marker">3</div>
+          <div class="step-content">
+            <h4>Ready for Pickup</h4>
+            <p>Packaged & waiting at your selected spot.</p>
+            <span class="step-time">Next</span>
+          </div>
+        </div>
+
+        <div class="tracking-step" id="step4">
+          <div class="step-marker">4</div>
+          <div class="step-content">
+            <h4>Completed</h4>
+            <p>Order picked up. Enjoy your meal!</p>
+            <span class="step-time">--</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Facilitates seamless screen recording demo without waiting 15 minutes -->
+      <button class="demo-advance-btn" onclick="advanceOrderStatus()">
+        ⚡ Simulate Next Kitchen Stage (Demo Feature)
+      </button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="accountModal">
+    <div class="modal-card">
+      <button class="modal-close-btn" onclick="closeModal('accountModal')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+      <h3 class="modal-title">FoodQueue Account</h3>
+      <p class="modal-subtitle">Sign in to keep order history and profile settings private.</p>
+      <div id="accountPanel"></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="ordersModal">
+    <div class="modal-card">
+      <button class="modal-close-btn" onclick="closeModal('ordersModal')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+      <h3 class="modal-title">Your Orders</h3>
+      <p class="modal-subtitle">Authenticated order history and receipts.</p>
+      <div id="ordersHistoryList"></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="offersModal">
+    <div class="modal-card">
+      <button class="modal-close-btn" onclick="closeModal('offersModal')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+      <h3 class="modal-title">Offers</h3>
+      <p class="modal-subtitle">Available canteen offers. Final discounts are calculated by the server.</p>
+      <div id="offersList"></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="feedbackModal">
+    <div class="modal-card">
+      <button class="modal-close-btn" onclick="closeModal('feedbackModal')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+      <h3 class="modal-title">Feedback</h3>
+      <p class="modal-subtitle">Tell the canteen how your order experience went.</p>
+      <form onsubmit="submitFeedback(event)">
+        <div class="form-group">
+          <label class="form-label" for="feedbackRating">Rating</label>
+          <select id="feedbackRating" class="form-control" required>
+            <option value="5">5 - Excellent</option>
+            <option value="4">4 - Good</option>
+            <option value="3">3 - Okay</option>
+            <option value="2">2 - Poor</option>
+            <option value="1">1 - Bad</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="feedbackComment">Comment</label>
+          <input id="feedbackComment" class="form-control" placeholder="What should the canteen know?" />
+        </div>
+        <button class="btn-checkout" type="submit"><span>Submit Feedback</span></button>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal-card">
+      <button class="modal-close-btn" onclick="closeModal('settingsModal')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+      <h3 class="modal-title">Settings</h3>
+      <p class="modal-subtitle">Profile and food preferences used for FoodQueue ordering.</p>
+      <form onsubmit="saveSettings(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="settingsName">Name</label>
+            <input id="settingsName" class="form-control" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="settingsPhone">Phone</label>
+            <input id="settingsPhone" class="form-control" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="dietaryPreference">Dietary Preference</label>
+            <select id="dietaryPreference" class="form-control">
+              <option value="">No preference</option>
+              <option value="vegetarian">Vegetarian</option>
+              <option value="vegan">Vegan</option>
+              <option value="non_vegetarian">Non-vegetarian</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="spicePreference">Spice Level</label>
+            <select id="spicePreference" class="form-control">
+              <option value="">No preference</option>
+              <option value="mild">Mild</option>
+              <option value="medium">Medium</option>
+              <option value="hot">Hot</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn-checkout" type="submit"><span>Save Settings</span></button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Feedback -->
+  <div class="toast-popup" id="toast">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+    <span id="toastMsg">Action successful</span>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
