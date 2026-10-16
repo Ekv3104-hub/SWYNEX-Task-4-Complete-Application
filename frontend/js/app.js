@@ -54,7 +54,18 @@ function demoToken(email) {
 }
 
 function authHeaders() {
-  const token = state.session?.access_token || localStorage.getItem('foodqueue_demo_token');
+  const isLocal = typeof window !== 'undefined' && (
+    window.location.hostname === 'localhost' ||
+    window.location.hostname === '127.0.0.1' ||
+    window.location.protocol === 'file:'
+  );
+  let token = state.session?.access_token;
+  if (!token && isLocal) {
+    token = localStorage.getItem('foodqueue_demo_token');
+  }
+  if (token && token.startsWith('demo.') && !isLocal) {
+    return {};
+  }
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
@@ -127,16 +138,24 @@ async function loadMenuFromApi() {
 }
 
 async function initAuth() {
+  const isLocal = typeof window !== 'undefined' && (
+    window.location.hostname === 'localhost' ||
+    window.location.hostname === '127.0.0.1' ||
+    window.location.protocol === 'file:'
+  );
   if (supabaseClient) {
     const { data } = await supabaseClient.auth.getSession();
     state.session = data.session;
-  } else {
+  } else if (isLocal) {
     const token = localStorage.getItem('foodqueue_demo_token');
     const profile = localStorage.getItem('foodqueue_demo_profile');
     if (token && profile) {
       state.session = { access_token: token };
       state.profile = JSON.parse(profile);
     }
+  } else {
+    state.session = null;
+    state.profile = null;
   }
 
   if (state.session && !state.profile) {
@@ -557,13 +576,24 @@ function renderAccountPanel() {
     `;
     return;
   }
+  const isLocal = typeof window !== 'undefined' && (
+    window.location.hostname === 'localhost' ||
+    window.location.hostname === '127.0.0.1' ||
+    window.location.protocol === 'file:'
+  );
   panel.innerHTML = `
     <form onsubmit="loginOrRegister(event)">
+      ${!supabaseClient && !isLocal ? `
+        <div style="background: #FFF7ED; border: 1px solid #FED7AA; border-radius: var(--radius-sm); padding: 12px 14px; margin-bottom: 14px; color: #9A3412; font-size: 0.85rem; line-height: 1.4;">
+          <strong>Supabase Auth Required</strong>
+          <p style="margin: 4px 0 0 0;">Customer login and registered profile history require live Supabase Auth credentials (<code>SUPABASE_URL</code> and <code>SUPABASE_ANON_KEY</code>). <strong>Guest checkout is fully active and works without login.</strong></p>
+        </div>
+      ` : ''}
       <div class="form-group"><label class="form-label" for="authName">Name</label><input id="authName" class="form-control" value="Ethan Vance" required /></div>
       <div class="form-group"><label class="form-label" for="authEmail">Email</label><input id="authEmail" type="email" class="form-control" value="student@foodqueue.local" required /></div>
       <div class="form-group"><label class="form-label" for="authPassword">Password</label><input id="authPassword" type="password" class="form-control" value="foodqueue-demo" required /></div>
-      <button class="btn-checkout" type="submit"><span>Register / Login</span></button>
-      <p style="font-size:0.78rem;color:var(--text-muted);margin-top:10px;">When Supabase config is present, this uses Supabase Auth. Without config, local demo auth is used.</p>
+      <button class="btn-checkout" type="submit"><span>${isLocal && !supabaseClient ? 'Register / Login (Demo Mode)' : 'Register / Login'}</span></button>
+      <p style="font-size:0.78rem;color:var(--text-muted);margin-top:10px;">${supabaseClient ? 'Secured by Supabase Auth.' : (isLocal ? 'Local demo auth active for offline testing.' : 'Customer login requires Supabase Auth. Guest checkout is enabled.')}</p>
     </form>
   `;
 }
@@ -573,6 +603,17 @@ async function loginOrRegister(event) {
   const name = document.getElementById('authName').value;
   const email = document.getElementById('authEmail').value;
   const password = document.getElementById('authPassword').value;
+  const isLocal = typeof window !== 'undefined' && (
+    window.location.hostname === 'localhost' ||
+    window.location.hostname === '127.0.0.1' ||
+    window.location.protocol === 'file:'
+  );
+
+  if (!supabaseClient && !isLocal) {
+    showToast('Customer login requires Supabase configuration in production. You can place orders as a guest.');
+    return;
+  }
+
   try {
     if (supabaseClient) {
       let { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });

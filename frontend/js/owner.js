@@ -25,9 +25,23 @@ function ownerDemoToken() {
 }
 
 function ownerHeaders() {
-  const token = ownerState.session?.access_token || localStorage.getItem('foodqueue_demo_owner_token') || ownerDemoToken();
-  localStorage.setItem('foodqueue_demo_owner_token', token);
-  return { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
+  const isLocal = typeof window !== 'undefined' && (
+    window.location.hostname === 'localhost' ||
+    window.location.hostname === '127.0.0.1' ||
+    window.location.protocol === 'file:'
+  );
+  let token = ownerState.session?.access_token;
+  if (!token && isLocal) {
+    token = localStorage.getItem('foodqueue_demo_owner_token') || ownerDemoToken();
+    localStorage.setItem('foodqueue_demo_owner_token', token);
+  }
+  if (token && token.startsWith('demo.') && !isLocal) {
+    token = null;
+  }
+  return {
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    'Content-Type': 'application/json'
+  };
 }
 
 async function ownerApi(path, options = {}) {
