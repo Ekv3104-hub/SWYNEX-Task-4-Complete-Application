@@ -162,6 +162,14 @@
             </button>
           </div>
 
+          <div id="offlineNotice" class="offline-banner" style="display: none;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            <div>
+              <strong>Offline Catalog Preview</strong>
+              <p>Kitchen backend is currently unreachable. You are viewing an unverified offline catalog. Live ordering is disabled.</p>
+            </div>
+          </div>
+
           <div class="food-grid" id="foodGrid">
             <!-- Food Cards Injected by JS -->
           </div>
@@ -241,6 +249,14 @@
 
       <h3 class="modal-title">Checkout Order</h3>
       <p class="modal-subtitle">Confirm your pickup details for the campus café.</p>
+
+      <div id="checkoutOfflineAlert" class="checkout-offline-alert" style="display: none;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+        <div>
+          <strong>Live Ordering Disabled</strong>
+          <span>FoodQueue kitchen backend is currently offline. Real production orders cannot be placed in offline preview mode.</span>
+        </div>
+      </div>
 
       <form id="checkoutForm" onsubmit="handlePlaceOrder(event)">
         <div class="form-group">
@@ -499,6 +515,21 @@
       </form>
     </div>
   </div>
+
+  <!-- Floating Mobile Cart Bar (visible only on mobile when items are in tray) -->
+  <aside class="mobile-cart-bar" id="mobileCartBar" onclick="openCheckoutModal()" aria-label="View Cart Tray and Checkout">
+    <div class="mobile-cart-info">
+      <div class="mobile-cart-badge-wrap">
+        <span class="mobile-cart-badge" id="mobileCartCount">0</span>
+        <span class="mobile-cart-label">Items in tray</span>
+      </div>
+      <div class="mobile-cart-total" id="mobileCartTotal">₹0</div>
+    </div>
+    <button class="mobile-cart-btn" type="button" aria-label="Proceed to Checkout">
+      <span>View Tray</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+    </button>
+  </aside>
 
   <!-- Toast Notification Feedback -->
   <div class="toast-popup" id="toast">

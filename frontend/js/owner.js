@@ -2,10 +2,10 @@ const OWNER_CONFIG = window.FOODQUEUE_CONFIG || {};
 const OWNER_API = OWNER_CONFIG.API_BASE_URL || (() => {
   try {
     const stored = localStorage.getItem('foodqueue_api_url');
-    if (stored) return stored;
+    if (stored && !stored.includes('netlify.app')) return stored;
   } catch {}
   const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-  return isLocal ? 'http://localhost:3000/api' : `${window.location.origin}/api`;
+  return isLocal ? 'http://localhost:3000/api' : 'https://swynex-task-4-complete-application.onrender.com/api';
 })();
 const ownerSupabase = OWNER_CONFIG.SUPABASE_URL && OWNER_CONFIG.SUPABASE_ANON_KEY && window.supabase
   ? window.supabase.createClient(OWNER_CONFIG.SUPABASE_URL, OWNER_CONFIG.SUPABASE_ANON_KEY)

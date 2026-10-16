@@ -13,20 +13,32 @@ window.FOODQUEUE_CONFIG = window.FOODQUEUE_CONFIG || {};
     }
   } catch {}
 
-  // 2. Check for previously stored API base URL
+  // 2. Check for previously stored API base URL (sanitizing stale Netlify references)
   const storedApi = (() => {
     try {
-      return localStorage.getItem('foodqueue_api_url');
+      const val = localStorage.getItem('foodqueue_api_url');
+      if (val && (val.includes('netlify.app') || val === window.location.origin || val === `${window.location.origin}/api`)) {
+        localStorage.removeItem('foodqueue_api_url');
+        return null;
+      }
+      return val;
     } catch {
       return null;
     }
   })();
 
   // 3. Fallback resolution:
-  // If hosted locally, default to http://localhost:3000/api
-  // If hosted on a static domain or cloud host, default to same-origin /api unless overridden
-  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-  const defaultApi = isLocal ? 'http://localhost:3000/api' : `${window.location.origin}/api`;
+  // Local environment: http://localhost:3000/api
+  // Production / Cloud environment: https://swynex-task-4-complete-application.onrender.com/api
+  const PRODUCTION_API_URL = 'https://swynex-task-4-complete-application.onrender.com/api';
+  const LOCAL_API_URL = 'http://localhost:3000/api';
+
+  const isLocal = typeof window !== 'undefined' && (
+    window.location.hostname === 'localhost' ||
+    window.location.hostname === '127.0.0.1' ||
+    window.location.protocol === 'file:'
+  );
+  const defaultApi = isLocal ? LOCAL_API_URL : PRODUCTION_API_URL;
 
   window.FOODQUEUE_CONFIG = {
     API_BASE_URL: window.FOODQUEUE_CONFIG.API_BASE_URL || storedApi || defaultApi,

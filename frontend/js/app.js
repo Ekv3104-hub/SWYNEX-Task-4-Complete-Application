@@ -2,10 +2,10 @@ const CONFIG = window.FOODQUEUE_CONFIG || {};
 const API_BASE_URL = CONFIG.API_BASE_URL || (() => {
   try {
     const stored = localStorage.getItem('foodqueue_api_url');
-    if (stored) return stored;
+    if (stored && !stored.includes('netlify.app')) return stored;
   } catch {}
   const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-  return isLocal ? 'http://localhost:3000/api' : `${window.location.origin}/api`;
+  return isLocal ? 'http://localhost:3000/api' : 'https://swynex-task-4-complete-application.onrender.com/api';
 })();
 const supabaseClient = CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY && window.supabase
   ? window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY)
@@ -15,6 +15,7 @@ let state = {
   selectedCategory: 'All',
   searchQuery: '',
   cart: {},
+  isOfflineCatalog: false,
   isPlacingOrder: false,
   isLoadingOrder: false,
   menuItems: FOOD_ITEMS,
@@ -79,7 +80,8 @@ function rupee(value) {
   return `₹${Number(value || 0)}`;
 }
 
-function normalizeMenuItem(item) {
+function normalizeMenuItem(item, isOffline = false) {
+  const stock = item.stockQuantity !== undefined ? Number(item.stockQuantity) : (isOffline ? null : 10);
   return {
     id: item.id,
     name: item.name,
@@ -88,25 +90,40 @@ function normalizeMenuItem(item) {
     price: item.price,
     badge: item.badge,
     image: item.image || item.imageUrl,
-    isAvailable: item.isAvailable !== false,
-    stockQuantity: item.stockQuantity
+    isAvailable: Boolean(item.isAvailable !== false && (stock === null ? item.isAvailable !== false : stock > 0)),
+    stockQuantity: stock,
+    isOfflinePreview: Boolean(isOffline)
   };
+}
+
+function updateOfflineUi() {
+  const banner = document.getElementById('offlineNotice');
+  if (banner) {
+    banner.style.display = state.isOfflineCatalog ? 'flex' : 'none';
+  }
 }
 
 async function loadMenuFromApi() {
   try {
     const payload = await apiRequest('/menu');
-    state.menuItems = payload.items.map(normalizeMenuItem);
-    const categoryNames = ['All', ...payload.categories.map((category) => category.name)];
+    if (!payload || !Array.isArray(payload.items)) {
+      throw new Error('Invalid menu payload received from backend.');
+    }
+    state.isOfflineCatalog = false;
+    state.menuItems = payload.items.map((item) => normalizeMenuItem(item, false));
+    const categoryNames = ['All', ...(payload.categories || []).map((category) => category.name || category.label || category.id)];
     state.categories = categoryNames.map((name) => {
-      const existing = CATEGORIES.find((category) => category.id === name);
+      const existing = CATEGORIES.find((category) => category.id === name || category.label === name);
       return existing || { id: name, label: name, icon: '<circle cx="12" cy="12" r="8"></circle>' };
     });
   } catch (error) {
-    state.menuItems = FOOD_ITEMS;
+    console.error('Menu load error:', error);
+    state.isOfflineCatalog = true;
+    state.menuItems = FOOD_ITEMS.map((item) => normalizeMenuItem(item, true));
     state.categories = CATEGORIES;
-    showToast('Using local menu because the API is unavailable.');
+    showToast(`API: ${error.message || 'Menu service unavailable'}. Offline preview mode active.`);
   }
+  updateOfflineUi();
 }
 
 async function initAuth() {
@@ -224,7 +241,7 @@ function renderMenu() {
         </div>
         <div class="food-details">
           <h4 class="food-title">${item.name}</h4>
-          <p class="food-desc">${item.isAvailable ? item.desc : 'Currently sold out. Please check again later.'}</p>
+          <p class="food-desc">${item.isAvailable ? item.desc : 'Currently sold out. Please check again later.'}${state.isOfflineCatalog ? ' <span class="offline-stock-tag">(Offline Preview — stock unverified)</span>' : ''}</p>
           <div class="food-footer">
             <span class="food-price">₹${item.price}</span>
             ${actionMarkup}
@@ -271,6 +288,8 @@ function renderCart() {
     taxEl.textContent = '₹0';
     totalEl.textContent = '₹0';
     checkoutBtn.disabled = true;
+    const mobileCartBar = document.getElementById('mobileCartBar');
+    if (mobileCartBar) mobileCartBar.classList.remove('active');
     return;
   }
 
@@ -301,6 +320,15 @@ function renderCart() {
   subtotalEl.textContent = rupee(totals.subtotal);
   taxEl.textContent = rupee(totals.tax);
   totalEl.textContent = rupee(totals.total);
+
+  const mobileCartBar = document.getElementById('mobileCartBar');
+  const mobileCartCount = document.getElementById('mobileCartCount');
+  const mobileCartTotal = document.getElementById('mobileCartTotal');
+  if (mobileCartBar) {
+    mobileCartBar.classList.add('active');
+    if (mobileCartCount) mobileCartCount.textContent = totalItemCount;
+    if (mobileCartTotal) mobileCartTotal.textContent = rupee(totals.total);
+  }
 }
 
 function updateItemQuantity(foodId, change) {
@@ -346,6 +374,24 @@ function switchNav(buttonEl, view) {
 function openCheckoutModal() {
   const itemIds = Object.keys(state.cart).filter(id => state.cart[id] > 0);
   if (itemIds.length === 0) return showToast('Your cart is empty');
+
+  const offlineAlert = document.getElementById('checkoutOfflineAlert');
+  const placeOrderBtn = document.getElementById('placeOrderBtn');
+  const placeOrderBtnText = document.getElementById('placeOrderBtnText');
+  if (state.isOfflineCatalog) {
+    if (offlineAlert) offlineAlert.style.display = 'flex';
+    if (placeOrderBtn) {
+      placeOrderBtn.disabled = true;
+      if (placeOrderBtnText) placeOrderBtnText.textContent = 'Live Ordering Offline';
+    }
+  } else {
+    if (offlineAlert) offlineAlert.style.display = 'none';
+    if (placeOrderBtn) {
+      placeOrderBtn.disabled = false;
+      if (placeOrderBtnText) placeOrderBtnText.textContent = 'Place Order Now';
+    }
+  }
+
   let subtotal = 0;
   document.getElementById('modalItemsReview').innerHTML = itemIds.map(id => {
     const item = state.menuItems.find(f => f.id === id);
@@ -392,6 +438,10 @@ function setPlaceOrderLoading(isLoading) {
 async function handlePlaceOrder(event) {
   event.preventDefault();
   if (state.isPlacingOrder) return;
+  if (state.isOfflineCatalog) {
+    showToast('Cannot place order: FoodQueue kitchen backend is offline. Real orders require a live connection.');
+    return;
+  }
   const items = Object.keys(state.cart).filter(id => state.cart[id] > 0).map(id => ({ menuItemId: id, quantity: state.cart[id] }));
   if (items.length === 0) return showToast('Your cart is empty');
 
