@@ -14,7 +14,7 @@ const supabaseClient = CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY && window
 let state = {
   selectedCategory: 'All',
   searchQuery: '',
-  cart: { food_1: 1, food_2: 1, food_5: 1 },
+  cart: {},
   isPlacingOrder: false,
   isLoadingOrder: false,
   menuItems: FOOD_ITEMS,
